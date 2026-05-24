@@ -1,63 +1,290 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AI Assisted Task Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+AI Assisted Task Management System is a production-ready Laravel application built using Clean Architecture, Repository Pattern, Service Layer architecture, and AI integration.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The application helps teams manage tasks efficiently while leveraging AI to generate summaries and suggest priorities.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Tech Stack
 
-## Learning Laravel
+- Laravel 10+
+- PHP 8.2+
+- MySQL
+- Blade + Tailwind CSS
+- REST APIs
+- OpenAI Integration
+- Laravel Breeze Authentication
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Features
 
-## Laravel Sponsors
+## Authentication & Roles
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- User Authentication
+- Admin Role
+- User Role
+- Role-based Authorization
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Task Management
 
-## Contributing
+## Task Fields
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Field | Type |
+|---|---|
+| title | string |
+| description | text |
+| priority | enum |
+| status | enum |
+| due_date | date |
+| assigned_to | user_id |
+| ai_summary | text |
+| ai_priority | enum |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Architecture
 
-## Security Vulnerabilities
+```txt
+Controller
+   ↓
+Service Layer
+   ↓
+Repository Layer
+   ↓
+Database
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+# Folder Structure
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-# ai-task-management-system
->>>>>>> bb0b6bf463dbc577f1b2e07b49c266bfd909de4e
+```txt
+app/
+├── Http/
+│   ├── Controllers/
+│   ├── Requests/
+│   └── Resources/
+│
+├── Models/
+│
+├── Repositories/
+│   ├── Contracts/
+│   └── Eloquent/
+│
+├── Services/
+│
+├── Policies/
+│
+├── Providers/
+│
+└── Enums/
+```
+
+---
+
+# Repository Pattern
+
+## Interface
+
+```php
+interface TaskRepositoryInterface
+{
+    public function all(array $filters = []);
+
+    public function find(int $id);
+
+    public function create(array $data);
+
+    public function update(int $id, array $data);
+
+    public function delete(int $id);
+}
+```
+
+---
+
+# Service Layer
+
+The Service Layer contains:
+- business logic
+- transactions
+- AI integration
+- repository communication
+
+Example:
+
+```php
+class TaskService
+{
+    public function store(array $data)
+    {
+        DB::transaction(function () use ($data) {
+
+            $task = $this->repo->create($data);
+
+            $aiData = $this->aiService
+                ->generateSummary($task);
+
+            $this->repo->update(
+                $task->id,
+                $aiData
+            );
+        });
+    }
+}
+```
+
+---
+
+# AI Integration
+
+## AIService Responsibilities
+
+- Prompt creation
+- API communication
+- Response parsing
+- Error handling
+- Mock fallback support
+
+---
+
+# AI Workflow
+
+```txt
+Task Created
+     ↓
+TaskService
+     ↓
+AIService
+     ↓
+OpenAI API
+     ↓
+AI Response
+     ↓
+Database Updated
+```
+
+---
+
+# Example AI Prompt
+
+```txt
+Analyze the following task.
+
+Title:
+Implement payment API
+
+Description:
+Complete Razorpay integration and test callbacks.
+
+Return:
+1. Short summary
+2. Suggested priority
+```
+
+---
+
+# REST APIs
+
+| Method | Endpoint |
+|---|---|
+| GET | /api/tasks |
+| POST | /api/tasks |
+| PATCH | /api/tasks/{id}/status |
+| GET | /api/tasks/{id}/ai-summary |
+
+---
+
+# Security
+
+- Laravel Policies
+- Authorization Gates
+- Validation via Form Requests
+- Role-based Access Control
+- CSRF Protection
+
+---
+
+# Dashboard Analytics
+
+Dashboard includes:
+- Total Tasks
+- Completed Tasks
+- Pending Tasks
+- High Priority Tasks
+- Charts using Chart.js
+
+---
+
+# Installation
+
+## Clone Repository
+
+```bash
+git clone repository-url
+```
+
+## Install Dependencies
+
+```bash
+composer install
+npm install
+```
+
+## Setup Environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+## Database Migration
+
+```bash
+php artisan migrate
+```
+
+## Run Application
+
+```bash
+php artisan serve
+npm run dev
+```
+
+---
+
+# Queue Worker
+
+```bash
+php artisan queue:work
+```
+
+---
+
+# Future Improvements
+
+- AI deadline prediction
+- Kanban board
+- Notifications
+- Docker support
+- CI/CD pipeline
+- Redis caching
+- WebSocket real-time updates
+
+---
+
+# Conclusion
+
+This project demonstrates:
+- Clean Laravel architecture
+- Repository Pattern
+- Service Layer
+- AI Integration
+- REST APIs
+- Production-ready structure
